@@ -2,13 +2,13 @@ from cmu_graphics import *
 
 class Button():
 
-    def __init__(self, text, x, y, w, h, borderWidth, colors):
+    def __init__(self, text, x, y, w, h, colors):
         self.text = text
         self.x = x
         self.y = y
         self.width = w
         self.height = h
-        self.borderWidth = borderWidth
+        self.borderWidth = (w + h) / 30
         self.isPressed = False
         self.colors = colors
 
@@ -52,12 +52,12 @@ class Button():
             
             return False
         
-    def updateDisplayArgs(self, x, y, w, h, borderWidth):
+    def updateDisplayArgs(self, x, y, w, h):
         self.x = x
         self.y = y
         self.width = w
         self.height = h
-        self.borderWidth = borderWidth
+        self.borderWidth = (w + h) / 30
 
 class Toggle(Button):
     

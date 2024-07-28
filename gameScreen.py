@@ -33,8 +33,7 @@ def findNumButtonDisplayList(app, boardDisplayArgs):
     boardWidth = boardDisplayArgs['boardWidth']
     boardHeight = boardDisplayArgs['boardHeight']
 
-    buttonBorderWidth = padding / 2
-    buttonPadding = buttonBorderWidth * 4
+    buttonPadding = padding * 2
 
     # How below the board the buttons should be
     buttonDist = boardHeight / 20
@@ -47,7 +46,7 @@ def findNumButtonDisplayList(app, boardDisplayArgs):
     buttonsLeft = boardX
     buttonsY = boardY + boardHeight + buttonDist
 
-    buttonDisplayList = [buttonsLeft, buttonsY, buttonSize, buttonBorderWidth]
+    buttonDisplayList = [buttonsLeft, buttonsY, buttonSize]
 
     return buttonDisplayList
 
@@ -59,9 +58,7 @@ def findHelpButtonArgs(app):
     helpX = app.width - (helpW * (5/4))
     helpY = app.height / 60
 
-    helpBorderW = helpW / 30
-
-    argList = [helpX, helpY, helpW, helpH, helpBorderW]
+    argList = [helpX, helpY, helpW, helpH]
 
     return argList
 
@@ -86,7 +83,7 @@ def gameScreen_onAppStart(app):
     app.game = Sudoku('easy', 'auto', boardDisplayArgs, colors) 
 
     NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
-    buttonsLeft, buttonsY, buttonSize, buttonBorderWidth = NumDisplayList
+    buttonsLeft, buttonsY, buttonSize = NumDisplayList
 
     buttonColors = {
         'fill' : rgb(60, 60, 60),
@@ -100,17 +97,16 @@ def gameScreen_onAppStart(app):
 
     for num in range(1, 10):
         
-        buttonPadding = buttonBorderWidth * 4
+        buttonPadding = buttonSize * 0.25
         buttonX = buttonsLeft + ((buttonSize + buttonPadding) * (num - 1))
 
         app.numButtons.append(Button(num, buttonX, buttonsY, buttonSize, 
-                                     buttonSize, buttonBorderWidth, buttonColors))
+                                     buttonSize, buttonColors))
         
     # Create help button
-    helpX, helpY, helpW, helpH, helpBorderW = findHelpButtonArgs(app)
+    helpX, helpY, helpW, helpH = findHelpButtonArgs(app)
 
-    app.helpButton = Button('Help', helpX, helpY, helpW, helpH, 
-                            helpBorderW, buttonColors)
+    app.helpButton = Button('Help', helpX, helpY, helpW, helpH, buttonColors)
 
 def gameScreen_onKeyPress(app, key):
         

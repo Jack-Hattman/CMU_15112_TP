@@ -97,7 +97,7 @@ def gameScreen_onAppStart(app):
 
     for num in range(1, 10):
         
-        buttonPadding = buttonSize * 0.25
+        buttonPadding = (boardDisplayArgs['boardWidth'] - 9 * buttonSize) / 8
         buttonX = buttonsLeft + ((buttonSize + buttonPadding) * (num - 1))
 
         app.numButtons.append(Button(num, buttonX, buttonsY, buttonSize, 
@@ -163,29 +163,8 @@ def gameScreen_onMouseRelease(app, mouseX, mouseY):
     help = app.helpButton.release(mouseX, mouseY)
 
     if help:
+        app.lastScreen = 'gameScreen'
         setActiveScreen('helpScreen')
-
-def onResize(app):
-
-    boardDisplayArgs = findBoardDisplayArgs(app)
-    
-    NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
-    buttonsLeft, buttonsY, buttonSize, buttonBorderWidth = NumDisplayList
-
-    app.game.updateDisplayArgs(boardDisplayArgs)
-
-    for num in range(1, 10):
-
-        button = app.numButtons[num - 1]
-        
-        buttonPadding = buttonBorderWidth * 4
-        buttonX = buttonsLeft + ((buttonSize + buttonPadding) * (num - 1))
-
-        button.updateDisplayArgs(buttonX, buttonsY, buttonSize, buttonSize,
-                                 buttonBorderWidth)
-        
-    helpX, helpY, helpW, helpH, helpBorderW = findHelpButtonArgs(app)
-    app.helpButton.updateDisplayArgs(helpX, helpY, helpW, helpH, helpBorderW)
 
 def gameScreen_redrawAll(app):
     app.game.displayBoard(app)

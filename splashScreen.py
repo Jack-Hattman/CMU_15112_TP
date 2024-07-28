@@ -44,18 +44,12 @@ def splashScreen_onMouseRelease(app, mouseX, mouseY):
     help = app.splashHelpButton.release(mouseX, mouseY)
 
     if start:
+        app.lastScreen = 'splashScreen'
         setActiveScreen('gameScreen')
 
     if help:
+        app.lastScreen = 'splashScreen'
         setActiveScreen('helpScreen')
-
-def onResize(app):
-
-    startX, helpX, buttonsY, buttonWidths, buttonHeights = getButtonPositions(app)
-    
-    app.splashStartButton.updateDisplayArgs(startX, buttonsY, buttonWidths, buttonHeights)
-    
-    app.splashHelpButton.updateDisplayArgs(helpX, buttonsY, buttonWidths, buttonHeights)
 
 def splashScreen_redrawAll(app):
 

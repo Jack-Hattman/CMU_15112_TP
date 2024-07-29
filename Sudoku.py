@@ -29,6 +29,9 @@ class Sudoku():
         self.displayArgs = displayArgs
         self.colorTheme = colorTheme
 
+        # Keep track of any cells with hints
+        self.hint = None
+
     ################################
     ##                            ##
     ##       LOGIC SECTION        ##
@@ -351,6 +354,10 @@ class Sudoku():
         else:
             self.board[row][col] = int(val)
 
+            if ((row, col) in self.hint and 
+                self.solvedBoard[row][col] == self.board[row][col]):
+                self.hint.remove((row, col))
+
             if self.mode == 'auto':
                 self.legalNums = Sudoku.generateAutoNotes(self)
 
@@ -374,7 +381,15 @@ class Sudoku():
             return True
     
         return False
-
+    
+    def generateHint(self):
+        
+        # Go through the board of legal nums
+        for i in range(len(self.legalNums)):
+            for j in range(len(self.legalNums[i])):
+                if (len(self.legalNums[i][j]) == 1 and 
+                    self.board[i][j] != self.solvedBoard[i][j]):
+                    self.hint = {(i, j)}
 
     ################################
     ##                            ##
@@ -463,6 +478,18 @@ class Sudoku():
 
             drawLabel(num, noteX, noteY, fill=textColor, size=fontSize, font=font, bold=True)
 
+    def highlightCell(self, app, row, col, color):
+
+        x, y, w, h = Sudoku.getTilePosAndSize(self, app, row, col)
+        borderWidth = self.displayArgs['padding'] / 1.25
+
+
+        # CMU graphics is weird with no fill and colored border
+        drawRect(x, y, borderWidth, h, fill=color)
+        drawRect(x, y, w, borderWidth, fill=color)
+        drawRect(x + w - borderWidth, y, borderWidth, h, fill=color)
+        drawRect(x, y + h - borderWidth, w, borderWidth, fill=color)
+
     def drawTile(self, app, row, col, num, tileFill='default', borderWidth=0):
 
         # Get the font
@@ -491,20 +518,21 @@ class Sudoku():
         borderCol = self.colorTheme['grid']
 
         drawRect(x, y, w, h, fill=tileFill, border=borderCol, borderWidth=borderWidth)
-        drawLabel(text, x + w/2, y + h/2, size=fontSize, fill=textCol, font=font, bold=True)       
-
-        Sudoku.drawNotes(self, app, row, col)
+        drawLabel(text, x + w/2, y + h/2, size=fontSize, fill=textCol, font=font, bold=True)      
 
         # Add a red border if the tile is wrong
         # Checks if a tile has the wrong value in auto mode
         if not Sudoku.isValidTile(self, row, col):
             invalidBorderCol = self.colorTheme['invalidTile']
-            invalidBorderWidth = self.displayArgs['padding'] / 1.25
-            # CMU graphics is weird with no fill and colored border
-            drawRect(x, y, invalidBorderWidth, h, fill=invalidBorderCol)
-            drawRect(x, y, w, invalidBorderWidth, fill=invalidBorderCol)
-            drawRect(x + w - invalidBorderWidth, y, invalidBorderWidth, h, fill=invalidBorderCol)
-            drawRect(x, y + h - invalidBorderWidth, w, invalidBorderWidth, fill=invalidBorderCol)
+            Sudoku.highlightCell(self, app, row, col, invalidBorderCol)
+
+        # Add a yellow border if the tile is part of a hint
+        elif self.hint != None and (row, col) in self.hint:
+            hintColor = self.colorTheme['hintColor']
+            Sudoku.highlightCell(self, app, row, col, hintColor) 
+
+        Sudoku.drawNotes(self, app, row, col)
+
 
     def drawBoard(self, app):
 

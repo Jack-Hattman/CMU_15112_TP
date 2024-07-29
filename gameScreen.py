@@ -90,11 +90,12 @@ def gameScreen_onScreenActivate(app):
         'initTile' : rgb(60, 60, 60),
         'tile' : rgb(40, 40, 40),
         'tileSelector' : rgb(200, 200, 200),
-        'invalidTile' : rgb(200, 0, 0),
+        'invalidTile' : rgb(255, 0, 0),
         'tileNum' : rgb(255, 255, 255),
         'notesNum' : rgb(200, 200, 200),
         'highlightTileNum' : rgb(0, 0, 0),
-        'highlightNotesNum' : rgb(20, 20, 20)
+        'highlightNotesNum' : rgb(20, 20, 20),
+        'hintColor' : rgb(255, 150, 0)
     }
 
     app.game = Sudoku(app.difficulty, 'manual', boardDisplayArgs, colors) 
@@ -154,6 +155,9 @@ def gameScreen_onKeyPress(app, key):
     elif key == 'n':
         app.game.toggleNotes()
 
+    elif key == 'h':
+        app.game.generateHint()
+
 def gameScreen_onMousePress(app, mouseX, mouseY):
 
     # Extract the display args so the variables are smaller
@@ -176,8 +180,8 @@ def gameScreen_onMousePress(app, mouseX, mouseY):
     app.quitButton.checkIsPressed(mouseX, mouseY)
 
     # Check if notes or hint was pressed
-    for input in app.gameplayButtons:
-        input.checkIsPressed(mouseX, mouseY)
+    for userInput in app.gameplayButtons:
+        userInput.checkIsPressed(mouseX, mouseY)
 
 def gameScreen_onMouseRelease(app, mouseX, mouseY):
 
@@ -231,10 +235,7 @@ def gameScreen_redrawAll(app):
     app.quitButton.drawButton()
 
     # Check if notes or hint was pressed
-    for input in app.gameplayButtons:
-        input.drawButton()
+    for userInput in app.gameplayButtons:
+        userInput.drawButton()
         
-        
-    drawLabel(f'Mode: {app.game.mode}', 300, 30, fill='white', size=30, font='monospace')
-    drawLabel(f'Is notes mode: {app.game.isNotesMode}', 300, 70, fill='white', size=30)
 

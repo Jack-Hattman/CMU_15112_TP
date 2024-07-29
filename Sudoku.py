@@ -4,6 +4,31 @@ import copy
 
 class Sudoku():
 
+    def __init__(self, difficulty, mode, displayArgs, colorTheme):
+
+        # Store the mode, auto vs manual
+        self.mode = mode
+        self.isNotesMode = False
+
+        # Initialize the board, and solved board variables
+        self.board = Sudoku.getBoard(difficulty)
+        self.solvedBoard = Sudoku.solve(self)
+
+        # Keep track of the initial cells
+        self.initCells = Sudoku.findInitCells(self.board)
+
+        # Generate the notes board for manual and auto
+        self.manualNotes = Sudoku.generateManualNotes(self)
+        self.legalNums = Sudoku.generateAutoNotes(self)
+
+        # Keep track of useful varibles in the instance
+        self.gridSize = int(len(self.board) ** 0.5)
+        self.selectedTile = (0, 0)
+
+        # Store the display varibles in dictionarys so its not to big
+        self.displayArgs = displayArgs
+        self.colorTheme = colorTheme
+
     ################################
     ##                            ##
     ##       LOGIC SECTION        ##
@@ -96,32 +121,6 @@ class Sudoku():
                 manualNotes[i].append(set())
 
         return manualNotes
-
-
-    def __init__(self, difficulty, mode, displayArgs, colorTheme):
-
-        # Store the mode, auto vs manual
-        self.mode = mode
-        self.isNotesMode = False
-
-        # Initialize the board, and solved board variables
-        self.board = Sudoku.getBoard(difficulty)
-        self.solvedBoard = Sudoku.solve(self)
-
-        # Keep track of the initial cells
-        self.initCells = Sudoku.findInitCells(self.board)
-
-        # Generate the notes board for manual and auto
-        self.manualNotes = Sudoku.generateManualNotes(self)
-        self.legalNums = Sudoku.generateAutoNotes(self)
-
-        # Keep track of useful varibles in the instance
-        self.gridSize = int(len(self.board) ** 0.5)
-        self.selectedTile = (0, 0)
-
-        # Store the display varibles in dictionarys so its not to big
-        self.displayArgs = displayArgs
-        self.colorTheme = colorTheme
 
     def flatten(L):
         flattenedList = []
@@ -292,14 +291,6 @@ class Sudoku():
     def toggleNotes(self):
         self.isNotesMode = not self.isNotesMode
 
-
-    ################################
-    ##                            ##
-    ##      DISPLAY SECTION       ##
-    ##                            ##
-    ################################
-
-
     def moveTileSelector(self, key=None, mouse=None):
 
         # Handle the case of arrowkeys
@@ -383,6 +374,13 @@ class Sudoku():
             return True
     
         return False
+
+
+    ################################
+    ##                            ##
+    ##      DISPLAY SECTION       ##
+    ##                            ##
+    ################################
 
     def getTilePosAndSize(self, app, row, col):
 
@@ -508,7 +506,7 @@ class Sudoku():
             drawRect(x + w - invalidBorderWidth, y, invalidBorderWidth, h, fill=invalidBorderCol)
             drawRect(x, y + h - invalidBorderWidth, w, invalidBorderWidth, fill=invalidBorderCol)
 
-    def displayBoard(self, app):
+    def drawBoard(self, app):
 
         # Extract the display args so the variables are smaller
         boardX = self.displayArgs['boardX']

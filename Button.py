@@ -29,7 +29,10 @@ class Button():
         drawRect(self.x, self.y, self.width, self.height, fill=fill, 
                  border=borderColor, borderWidth=self.borderWidth)
         
-        fontSize = min(self.width, self.height) / 2
+        if len(str(self.text)) > 1:
+            fontSize = min(self.width, self.height) * 2.5 / len(str(self.text))
+        else:
+            fontSize = min(self.width, self.height) / 1.5
         
         drawLabel(self.text, cx, cy, fill=textColor, size=fontSize, font=self.font, bold=True)
 
@@ -45,7 +48,7 @@ class Button():
 
     def release(self, mouseX, mouseY):
         if self.isPressed:
-            self.isPressed = False
+            self.isPressed = not self.isPressed
 
             if Button.mouseInButton(self, mouseX, mouseY):
                 return True
@@ -65,8 +68,10 @@ class Toggle(Button):
         super().__init__(text, x, y, w, h, colors)
 
     def release(self, mouseX, mouseY):
-        # This is the simplest way i can think to overide the 
-        # inherited release function
-        pass
+
+        if Button.mouseInButton(self, mouseX, mouseY):
+            return True
+        
+        return False
 
     

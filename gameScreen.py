@@ -65,6 +65,19 @@ def findHelpAndQuitButtonArgs(app, boardDisplayArgs):
 
     return argList
 
+def findNotesAndHintButtonArgs(app, boardDisplayArgs):
+
+    buttonWidths = app.width / 6
+    buttonHeights = app.height / 12
+
+    buttonsTop = boardDisplayArgs['boardY']
+
+    buttonsX = app.width - (buttonWidths * (5/4))
+
+    argList = [buttonsX, buttonsTop, buttonWidths, buttonHeights]
+
+    return argList
+
 def gameScreen_onScreenActivate(app):
 
     boardDisplayArgs = findBoardDisplayArgs(app)
@@ -83,7 +96,8 @@ def gameScreen_onScreenActivate(app):
         'highlightTileNum' : rgb(0, 0, 0),
         'highlightNotesNum' : rgb(20, 20, 20)
     }
-    app.game = Sudoku(app.difficulty, 'auto', boardDisplayArgs, colors) 
+
+    app.game = Sudoku(app.difficulty, 'manual', boardDisplayArgs, colors) 
 
     NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
     buttonsLeft, buttonsY, buttonSize = NumDisplayList
@@ -111,6 +125,17 @@ def gameScreen_onScreenActivate(app):
 
     app.helpButton = Button('Help', helpX, buttonsY, buttonsW, buttonsH, buttonColors)
     app.quitButton = Button('Quit', quitX, buttonsY, buttonsW, buttonsH, buttonColors)
+
+    # Create the note and help Buttons
+    notesAndHelpList = findNotesAndHintButtonArgs(app, boardDisplayArgs)
+    buttonsX, buttonsTop, buttonWidths, buttonHeights = notesAndHelpList
+
+    notesY = buttonsTop + 2 * buttonHeights
+
+    autoNotesToggle = Toggle('Auto Notes', buttonsX, buttonsTop, buttonWidths, buttonHeights, buttonColors)
+    notesModeToggle = Toggle('Notes', buttonsX, notesY, buttonWidths, buttonHeights, buttonColors)
+
+    app.gameplayButtons = [autoNotesToggle, notesModeToggle]
 
 def gameScreen_onKeyPress(app, key):
         
@@ -150,6 +175,10 @@ def gameScreen_onMousePress(app, mouseX, mouseY):
     app.helpButton.checkIsPressed(mouseX, mouseY)
     app.quitButton.checkIsPressed(mouseX, mouseY)
 
+    # Check if notes or hint was pressed
+    for input in app.gameplayButtons:
+        input.checkIsPressed(mouseX, mouseY)
+
 def gameScreen_onMouseRelease(app, mouseX, mouseY):
 
     # Check if any of the buttons have been released
@@ -175,8 +204,24 @@ def gameScreen_onMouseRelease(app, mouseX, mouseY):
     if quit:
         setActiveScreen('splashScreen')
 
+    # Check if notes or hint was pressed
+    for i in range(len(app.gameplayButtons)):
+        
+        userInput = app.gameplayButtons[i]
+
+        pressed = userInput.release(mouseX, mouseY)
+
+        if pressed:
+            if i == 0:
+                app.game.toggleMode()
+            elif i == 1:
+                app.game.toggleNotes()
+            elif i == 2:
+                # add hints
+                pass
+
 def gameScreen_redrawAll(app):
-    app.game.displayBoard(app)
+    app.game.drawBoard(app)
     app.game.drawTileSelector(app)
     
     for button in app.numButtons:
@@ -184,6 +229,11 @@ def gameScreen_redrawAll(app):
 
     app.helpButton.drawButton()
     app.quitButton.drawButton()
+
+    # Check if notes or hint was pressed
+    for input in app.gameplayButtons:
+        input.drawButton()
+        
         
     drawLabel(f'Mode: {app.game.mode}', 300, 30, fill='white', size=30, font='monospace')
     drawLabel(f'Is notes mode: {app.game.isNotesMode}', 300, 70, fill='white', size=30)

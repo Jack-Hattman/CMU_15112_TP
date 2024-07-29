@@ -8,26 +8,48 @@ def onResize(app):
 
     # Update the game screen on resize
 
-    boardDisplayArgs = findBoardDisplayArgs(app)
-    
-    NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
-    buttonsLeft, buttonsY, buttonSize = NumDisplayList
+    # Learned has attribut from stack overflow
+    #https://stackoverflow.com/questions/610883/how-to-check-if-an-object-has-an-attribute
 
-    app.game.updateDisplayArgs(boardDisplayArgs)
+    if hasattr(app, 'game'):
 
-    for num in range(1, 10):
-
-        button = app.numButtons[num - 1]
+        boardDisplayArgs = findBoardDisplayArgs(app)
         
-        buttonPadding = (boardDisplayArgs['boardWidth'] - 9 * buttonSize) / 8
-        buttonX = buttonsLeft + ((buttonSize + buttonPadding) * (num - 1))
+        NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
+        buttonsLeft, buttonsY, buttonSize = NumDisplayList
 
-        button.updateDisplayArgs(buttonX, buttonsY, buttonSize, buttonSize)
-        
-    helpX, quitX, buttonsY, buttonsW, buttonsH = findHelpAndQuitButtonArgs(app, boardDisplayArgs)
+        app.game.updateDisplayArgs(boardDisplayArgs)
 
-    app.helpButton.updateDisplayArgs(helpX, buttonsY, buttonsW, buttonsH)
-    app.quitButton.updateDisplayArgs(quitX, buttonsY, buttonsW, buttonsH)
+        for num in range(1, 10):
+
+            button = app.numButtons[num - 1]
+            
+            buttonPadding = (boardDisplayArgs['boardWidth'] - 9 * buttonSize) / 8
+            buttonX = buttonsLeft + ((buttonSize + buttonPadding) * (num - 1))
+
+            button.updateDisplayArgs(buttonX, buttonsY, buttonSize, buttonSize)
+            
+        helpX, quitX, buttonsY, buttonsW, buttonsH = findHelpAndQuitButtonArgs(app, boardDisplayArgs)
+
+        app.helpButton.updateDisplayArgs(helpX, buttonsY, buttonsW, buttonsH)
+        app.quitButton.updateDisplayArgs(quitX, buttonsY, buttonsW, buttonsH)
+
+        notesAndHelpList = findNotesAndHintButtonArgs(app, boardDisplayArgs)
+        buttonsX, buttonsTop, buttonWidths, buttonHeights = notesAndHelpList
+
+        notesY = buttonsTop + 2 * buttonHeights
+
+        for i in range(len(app.gameplayButtons)):
+            
+            if i == 0:
+                y = buttonsTop
+            elif i == 1:
+                y = notesY
+
+            userInput = app.gameplayButtons[i]
+
+            userInput.updateDisplayArgs(buttonsX, y, buttonWidths, buttonHeights)
+
 
 
     # Update the splash screen on resize

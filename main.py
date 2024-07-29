@@ -24,17 +24,27 @@ def onResize(app):
 
         button.updateDisplayArgs(buttonX, buttonsY, buttonSize, buttonSize)
         
-    helpX, helpY, helpW, helpH = findHelpButtonArgs(app)
-    app.helpButton.updateDisplayArgs(helpX, helpY, helpW, helpH)
+    helpX, quitX, buttonsY, buttonsW, buttonsH = findHelpAndQuitButtonArgs(app, boardDisplayArgs)
+
+    app.helpButton.updateDisplayArgs(helpX, buttonsY, buttonsW, buttonsH)
+    app.quitButton.updateDisplayArgs(quitX, buttonsY, buttonsW, buttonsH)
 
 
     # Update the splash screen on resize
 
-    startX, helpX, buttonsY, buttonWidths, buttonHeights = getButtonPositions(app)
+    diffLeft, diffY, buttonWidths, buttonHeights = getDiffButtonPositions(app)
+    helpX, helpY, helpW, helpH = getHelpButtonPosition(app)
     
-    app.splashStartButton.updateDisplayArgs(startX, buttonsY, buttonWidths, buttonHeights)
+    for i in range(len(app.difficultyButtons)):
+
+        button = app.difficultyButtons[i]
+
+        # 1.25 adds the padding
+        diffX = diffLeft + (i * buttonWidths * 1.25)
+
+        button.updateDisplayArgs(diffX, diffY, buttonWidths, buttonHeights)
     
-    app.splashHelpButton.updateDisplayArgs(helpX, buttonsY, buttonWidths, buttonHeights)
+    app.splashHelpButton.updateDisplayArgs(helpX, helpY, helpW, helpH)
 
 
     # Update the help screen on resize

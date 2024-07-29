@@ -50,19 +50,22 @@ def findNumButtonDisplayList(app, boardDisplayArgs):
 
     return buttonDisplayList
 
-def findHelpButtonArgs(app):
+def findHelpAndQuitButtonArgs(app, boardDisplayArgs):
 
-    helpW = app.width / 6
-    helpH = app.height / 12
+    buttonW = app.width / 6
+    buttonH = app.height / 12
 
-    helpX = app.width - (helpW * (5/4))
-    helpY = app.height / 60
+    buttonsY = app.height / 60
 
-    argList = [helpX, helpY, helpW, helpH]
+    helpX = app.width - (buttonW * (5/4))
+
+    quitX = boardDisplayArgs['boardX']
+
+    argList = [helpX, quitX, buttonsY, buttonW, buttonH]
 
     return argList
 
-def gameScreen_onAppStart(app):
+def gameScreen_onScreenActivate(app):
 
     boardDisplayArgs = findBoardDisplayArgs(app)
 
@@ -80,7 +83,7 @@ def gameScreen_onAppStart(app):
         'highlightTileNum' : rgb(0, 0, 0),
         'highlightNotesNum' : rgb(20, 20, 20)
     }
-    app.game = Sudoku('easy', 'auto', boardDisplayArgs, colors) 
+    app.game = Sudoku(app.difficulty, 'auto', boardDisplayArgs, colors) 
 
     NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
     buttonsLeft, buttonsY, buttonSize = NumDisplayList
@@ -103,10 +106,11 @@ def gameScreen_onAppStart(app):
         app.numButtons.append(Button(num, buttonX, buttonsY, buttonSize, 
                                      buttonSize, buttonColors))
         
-    # Create help button
-    helpX, helpY, helpW, helpH = findHelpButtonArgs(app)
+    # Create help and quit button
+    helpX, quitX, buttonsY, buttonsW, buttonsH = findHelpAndQuitButtonArgs(app, boardDisplayArgs)
 
-    app.helpButton = Button('Help', helpX, helpY, helpW, helpH, buttonColors)
+    app.helpButton = Button('Help', helpX, buttonsY, buttonsW, buttonsH, buttonColors)
+    app.quitButton = Button('Quit', quitX, buttonsY, buttonsW, buttonsH, buttonColors)
 
 def gameScreen_onKeyPress(app, key):
         
@@ -142,8 +146,9 @@ def gameScreen_onMousePress(app, mouseX, mouseY):
     for button in app.numButtons:
         button.checkIsPressed(mouseX, mouseY)
 
-    # Check if the help button is pressed
+    # Check if the help or quit button is pressed
     app.helpButton.checkIsPressed(mouseX, mouseY)
+    app.quitButton.checkIsPressed(mouseX, mouseY)
 
 def gameScreen_onMouseRelease(app, mouseX, mouseY):
 
@@ -161,10 +166,14 @@ def gameScreen_onMouseRelease(app, mouseX, mouseY):
 
     # Check if the help button is released
     help = app.helpButton.release(mouseX, mouseY)
+    quit = app.quitButton.release(mouseX, mouseY)
 
     if help:
         app.lastScreen = 'gameScreen'
         setActiveScreen('helpScreen')
+
+    if quit:
+        setActiveScreen('splashScreen')
 
 def gameScreen_redrawAll(app):
     app.game.displayBoard(app)
@@ -174,6 +183,7 @@ def gameScreen_redrawAll(app):
         button.drawButton()
 
     app.helpButton.drawButton()
+    app.quitButton.drawButton()
         
     drawLabel(f'Mode: {app.game.mode}', 300, 30, fill='white', size=30, font='monospace')
     drawLabel(f'Is notes mode: {app.game.isNotesMode}', 300, 70, fill='white', size=30)

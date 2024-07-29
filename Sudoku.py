@@ -110,12 +110,10 @@ class Sudoku():
 
         # Keep track of the initial cells
         self.initCells = Sudoku.findInitCells(self.board)
-        print(self.initCells)
 
         # Generate the notes board for manual and auto
         self.manualNotes = Sudoku.generateManualNotes(self)
-        self.autoNotes = Sudoku.generateAutoNotes(self)
-        print(self.solvedBoard)        
+        self.legalNums = Sudoku.generateAutoNotes(self)
 
         # Keep track of useful varibles in the instance
         self.gridSize = int(len(self.board) ** 0.5)
@@ -353,13 +351,7 @@ class Sudoku():
 
         # Check if notes mode is activated
         if self.isNotesMode:
-            if self.mode == 'auto':
-                if int(val) in self.autoNotes[row][col]:
-                    self.autoNotes[row][col].remove(int(val))
-                else:
-                    self.autoNotes[row][col].add(int(val))
-
-            else:
+            if self.mode == 'manual':
                 if int(val) in self.manualNotes[row][col]:
                     self.manualNotes[row][col].remove(int(val))
                 else:
@@ -369,7 +361,7 @@ class Sudoku():
             self.board[row][col] = int(val)
 
             if self.mode == 'auto':
-                self.autoNotes = Sudoku.generateAutoNotes(self)
+                self.legalNums = Sudoku.generateAutoNotes(self)
 
     def removeNum(self):
         row, col = self.selectedTile
@@ -378,7 +370,7 @@ class Sudoku():
             self.board[row][col] = 0
 
             if self.mode == 'auto':
-                self.autoNotes = Sudoku.generateAutoNotes(self)
+                self.legalNums = Sudoku.generateAutoNotes(self)
 
     def isValidTile(self, row, col):
         if (row, col) in self.initCells:
@@ -442,7 +434,7 @@ class Sudoku():
             return
 
         if self.mode == 'auto':
-            curNotes = self.autoNotes
+            curNotes = self.legalNums
         else:
             curNotes = self.manualNotes
 

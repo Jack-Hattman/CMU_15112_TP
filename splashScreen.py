@@ -1,18 +1,28 @@
 from cmu_graphics import *
 from Button import *
 
-def getButtonPositions(app):
+def getDiffButtonPositions(app):
 
-    buttonWidths = app.width / 6
-    buttonHeights = app.height / 12
+    buttonWidths = app.width / 7
+    buttonHeights = app.height / 16
 
-    buttonsY = app.height * (2/3)
+    diffPadding = buttonWidths * 0.25
 
-    startX = (app.width / 2) - (buttonWidths * 3/2)
-    
-    helpX = (app.width / 2) + (buttonWidths * 1/2)
+    diffY = app.height * (1/2)
 
-    return [startX, helpX, buttonsY, buttonWidths, buttonHeights]
+    diffLeft = (app.width / 2) - ((buttonWidths * 5 + diffPadding * 4) / 2)
+
+    return [diffLeft, diffY, buttonWidths, buttonHeights]
+
+def getHelpButtonPosition(app):
+
+    helpWidth = app.width / 6
+    helpHeight = app.height / 12
+
+    helpY = app.height * (5/6)
+    helpX = (app.width / 2) - (helpWidth / 2)
+
+    return [helpX, helpY, helpWidth, helpHeight]
 
 def splashScreen_onAppStart(app):
 
@@ -23,29 +33,48 @@ def splashScreen_onAppStart(app):
         'textColor' : rgb(240, 240, 240)
     }
 
-    startX, helpX, buttonsY, buttonWidths, buttonHeights = getButtonPositions(app)
+    diffLeft, diffY, buttonWidths, buttonHeights = getDiffButtonPositions(app)
+    helpX, helpY, helpW, helpH = getHelpButtonPosition(app)
+
+    app.difficultyButtons = []
+
+    app.difficulties = ['easy', 'medium', 'hard', 'expert', 'evil']
+
+    for i in range(len(app.difficulties)):
+        difficulty = app.difficulties[i]
+
+        # 1.25 adds the padding
+        diffX = diffLeft + (i * buttonWidths * 1.25)
+
+        diffButton = Button(difficulty, diffX, diffY, buttonWidths, buttonHeights, buttonColors)
+        app.difficultyButtons.append(diffButton)
     
-    app.splashStartButton = Button('Start', startX, buttonsY, buttonWidths, 
-                                   buttonHeights, buttonColors)
-    
-    app.splashHelpButton = Button('Help', helpX, buttonsY, buttonWidths,
-                                  buttonHeights, buttonColors)
+    app.splashHelpButton = Button('Help', helpX, helpY, helpW, helpH, buttonColors)
     
 def splashScreen_onMousePress(app, mouseX, mouseY):
 
     # Check if the buttons are pressed
-    app.splashStartButton.checkIsPressed(mouseX, mouseY)
+    for button in app.difficultyButtons:
+        button.checkIsPressed(mouseX, mouseY)
+
     app.splashHelpButton.checkIsPressed(mouseX, mouseY)
 
 def splashScreen_onMouseRelease(app, mouseX, mouseY):
 
     # Check if the buttons are released
-    start = app.splashStartButton.release(mouseX, mouseY)
-    help = app.splashHelpButton.release(mouseX, mouseY)
+    for i in range(len(app.difficultyButtons)):
+        button = app.difficultyButtons[i]
+        difficulty = app.difficulties[i]
 
-    if start:
-        app.lastScreen = 'splashScreen'
-        setActiveScreen('gameScreen')
+        start = button.release(mouseX, mouseY)
+
+        if start:
+            app.difficulty = difficulty
+            app.lastScreen = 'splashScreen'
+            setActiveScreen('gameScreen')
+
+
+    help = app.splashHelpButton.release(mouseX, mouseY)
 
     if help:
         app.lastScreen = 'splashScreen'
@@ -64,5 +93,7 @@ def splashScreen_redrawAll(app):
     drawLabel('SUDOKU', titleX, titleY, size=fontSize, fill='white', 
               font='monospace', bold=True)
     
-    app.splashStartButton.drawButton()
+    for button in app.difficultyButtons:
+        button.drawButton()
+
     app.splashHelpButton.drawButton()

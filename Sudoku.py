@@ -30,7 +30,7 @@ class Sudoku():
         self.colorTheme = colorTheme
 
         # Keep track of any cells with hints
-        self.hint = None
+        self.hint = set()
 
     ################################
     ##                            ##
@@ -354,7 +354,7 @@ class Sudoku():
         else:
             self.board[row][col] = int(val)
 
-            if ((row, col) in self.hint and 
+            if (self.hint != set() and (row, col) in self.hint and 
                 self.solvedBoard[row][col] == self.board[row][col]):
                 self.hint.remove((row, col))
 
@@ -383,13 +383,20 @@ class Sudoku():
         return False
     
     def generateHint(self):
-        
-        # Go through the board of legal nums
-        for i in range(len(self.legalNums)):
-            for j in range(len(self.legalNums[i])):
-                if (len(self.legalNums[i][j]) == 1 and 
-                    self.board[i][j] != self.solvedBoard[i][j]):
-                    self.hint = {(i, j)}
+
+        if self.hint != set():
+            for (row, col) in self.hint:
+                self.board[row][col] = self.solvedBoard[row][col]
+
+            self.hint = set()
+
+        else:
+            # Go through the board of legal nums
+            for i in range(len(self.legalNums)):
+                for j in range(len(self.legalNums[i])):
+                    if (len(self.legalNums[i][j]) == 1 and 
+                        self.board[i][j] != self.solvedBoard[i][j]):
+                        self.hint = {(i, j)}
 
     ################################
     ##                            ##
@@ -527,7 +534,7 @@ class Sudoku():
             Sudoku.highlightCell(self, app, row, col, invalidBorderCol)
 
         # Add a yellow border if the tile is part of a hint
-        elif self.hint != None and (row, col) in self.hint:
+        elif self.hint != set() and (row, col) in self.hint:
             hintColor = self.colorTheme['hintColor']
             Sudoku.highlightCell(self, app, row, col, hintColor) 
 

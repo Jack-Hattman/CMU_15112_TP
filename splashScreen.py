@@ -26,6 +26,8 @@ def getHelpButtonPosition(app):
 
 def splashScreen_onAppStart(app):
 
+    app.currentGame = None
+
     buttonColors = {
         'fill' : rgb(60, 60, 60),
         'pressedFill' : rgb(20, 20, 20),
@@ -69,6 +71,7 @@ def splashScreen_onMouseRelease(app, mouseX, mouseY):
         start = button.release(mouseX, mouseY)
 
         if start:
+            app.game = None
             app.difficulty = difficulty
             app.lastScreen = 'splashScreen'
             setActiveScreen('gameScreen')

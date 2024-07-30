@@ -30,7 +30,8 @@ class Button():
                  border=borderColor, borderWidth=self.borderWidth)
         
         if len(str(self.text)) > 1:
-            fontSize = min(self.width, self.height) * 2.5 / len(str(self.text))
+            # These numbers were tweaked until they looked nice
+            fontSize = (2 * self.width * self.height)/(len(str(self.text)) * 80)
         else:
             fontSize = min(self.width, self.height) / 1.5
         

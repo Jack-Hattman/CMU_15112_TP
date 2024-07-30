@@ -98,7 +98,9 @@ def gameScreen_onScreenActivate(app):
         'hintColor' : rgb(255, 150, 0)
     }
 
-    app.game = Sudoku(app.difficulty, 'manual', boardDisplayArgs, colors) 
+    if app.game == None:
+        app.game = Sudoku(app.difficulty, 'manual', boardDisplayArgs, colors) 
+        app.gameOver = False
 
     NumDisplayList = findNumButtonDisplayList(app, boardDisplayArgs)
     buttonsLeft, buttonsY, buttonSize = NumDisplayList
@@ -131,51 +133,66 @@ def gameScreen_onScreenActivate(app):
     notesAndHelpList = findNotesAndHintButtonArgs(app, boardDisplayArgs)
     buttonsX, buttonsTop, buttonWidths, buttonHeights = notesAndHelpList
 
-    app.gameplayButtonPadding = 0.25 * (boardDisplayArgs['boardHeight'] - 5 * buttonHeights)
+    gpButtonPadding = 0.25*(boardDisplayArgs['boardHeight'] - 5 * buttonHeights)
 
-    notesY = buttonsTop + (app.gameplayButtonPadding + buttonHeights)
-    hintY = buttonsTop + 2 * (app.gameplayButtonPadding + buttonHeights)
-    deleteY = buttonsTop + 3 * (app.gameplayButtonPadding + buttonHeights)
-    solveY = buttonsTop + 4 * (app.gameplayButtonPadding + buttonHeights)
+    notesY = buttonsTop + (gpButtonPadding + buttonHeights)
+    hintY = buttonsTop + 2 * (gpButtonPadding + buttonHeights)
+    deleteY = buttonsTop + 3 * (gpButtonPadding + buttonHeights)
+    solveY = buttonsTop + 4 * (gpButtonPadding + buttonHeights)
 
-    autoNotesToggle = Toggle('Auto Notes', buttonsX, buttonsTop, buttonWidths, buttonHeights, buttonColors)
-    notesModeToggle = Toggle('Notes', buttonsX, notesY, buttonWidths, buttonHeights, buttonColors)
-    hintButton = Button('Hint', buttonsX, hintY, buttonWidths, buttonHeights, buttonColors)
-    deleteButton = Button('Delete', buttonsX, deleteY, buttonWidths, buttonHeights, buttonColors)
-    solveButton = Button('Solve', buttonsX, solveY, buttonWidths, buttonHeights, buttonColors)
+    autoNotesToggle = Toggle('Auto Notes', buttonsX, buttonsTop, 
+                             buttonWidths, buttonHeights, buttonColors)
+    notesModeToggle = Toggle('Notes', buttonsX, notesY, 
+                             buttonWidths, buttonHeights, buttonColors)
+    hintButton = Button('Hint', buttonsX, hintY, buttonWidths, 
+                        buttonHeights, buttonColors)
+    deleteButton = Button('Delete', buttonsX, deleteY, buttonWidths, 
+                          buttonHeights, buttonColors)
+    solveButton = Button('Solve', buttonsX, solveY, buttonWidths, 
+                         buttonHeights, buttonColors)
 
     app.gameplayButtons = [autoNotesToggle, notesModeToggle, hintButton, deleteButton, solveButton]
 
 def gameScreen_onKeyPress(app, key):
+
+    if not app.gameOver:
         
-    if key in ['up', 'down', 'left', 'right']:
-        app.game.moveTileSelector(key=key)
+        if key in ['up', 'down', 'left', 'right']:
+            app.game.moveTileSelector(key=key)
 
-    elif key.isdigit() and key != '0':
-        app.game.placeNum(key)
+        elif key.isdigit() and key != '0':
+            app.game.placeNum(key)
 
-    elif key == 'backspace':
-        app.game.removeNum()
+        elif key == 'backspace':
+            app.game.removeNum()
 
-    elif key == 'm':
-        app.game.toggleMode()
+        elif key == 'm':
+            app.game.toggleMode()
 
-        # This is the index of the auto notes button
-        notesModeButton = app.gameplayButtons[0]
-        notesModeButton.isPressed = not notesModeButton.isPressed
+            # This is the index of the auto notes button
+            notesModeButton = app.gameplayButtons[0]
+            notesModeButton.isPressed = not notesModeButton.isPressed
 
-    elif key == 'n':
-        app.game.toggleNotes()
+        elif key == 'n':
+            app.game.toggleNotes()
 
-        # This is the index of the notes button
-        notesButton = app.gameplayButtons[1]
-        notesButton.isPressed = not notesButton.isPressed
+            # This is the index of the notes button
+            notesButton = app.gameplayButtons[1]
+            notesButton.isPressed = not notesButton.isPressed
 
-    elif key == 'h':
-        app.game.generateHint()
+        elif key == 'h':
+            app.game.generateHint()
 
-    elif key == 's':
-        app.game.board = app.game.solvedBoard
+        elif key == 's':
+            app.game.board = app.game.solvedBoard
+
+            # You have to add this because isSolved only gets updated when
+            # tiles are placed
+            app.gameOver = True
+
+    if app.game.isSolved:
+        print('game over')
+        app.gameOver = True
 
 def gameScreen_onMousePress(app, mouseX, mouseY):
 
@@ -246,6 +263,14 @@ def gameScreen_onMouseRelease(app, mouseX, mouseY):
             elif i == 4:
                 app.game.board = app.game.solvedBoard
 
+                # You have to add this because isSolved only gets updated when
+                # tiles are placed
+                app.gameOver = True
+
+    if app.game.isSolved:
+        print('game over')
+        app.gameOver = True
+
 def gameScreen_redrawAll(app):
     app.game.drawBoard(app)
     app.game.drawTileSelector(app)
@@ -259,5 +284,14 @@ def gameScreen_redrawAll(app):
     # Check if notes or hint was pressed
     for userInput in app.gameplayButtons:
         userInput.drawButton()
+
+    if app.gameOver:
+        labelX = app.width / 2
+        labelY = app.height / 14
+        fontSize = (min(app.width, app.height) / 20)
+
+        drawLabel('You Win!', labelX, labelY, size=fontSize, fill='white',
+                  font='monospace', bold=True)
+
         
 

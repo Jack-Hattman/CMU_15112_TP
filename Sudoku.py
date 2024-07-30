@@ -32,6 +32,9 @@ class Sudoku():
         # Keep track of any cells with hints
         self.hint = set()
 
+        # Store a variable for if the board is solved
+        self.isSolved = False
+
     ################################
     ##                            ##
     ##       LOGIC SECTION        ##
@@ -361,6 +364,8 @@ class Sudoku():
             if self.mode == 'auto':
                 self.legalNums = Sudoku.generateAutoNotes(self)
 
+            self.isSolved = Sudoku.isSolvedBoard(self.board)
+
     def removeNum(self):
         row, col = self.selectedTile
 
@@ -560,8 +565,8 @@ class Sudoku():
         h = boardHeight - padding
         IBcolor = self.colorTheme['innerBorder']
 
-        Sudoku.drawGrid(app, x, y, w, h, self.gridSize, self.gridSize, borderCol=IBcolor, 
-                        borderWidth=padding / 2)
+        Sudoku.drawGrid(app, x, y, w, h, self.gridSize, self.gridSize, 
+                        borderCol=IBcolor, borderWidth=padding / 2)
 
         # Draw the tiles
         for row in range(self.gridSize ** 2):

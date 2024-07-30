@@ -131,12 +131,20 @@ def gameScreen_onScreenActivate(app):
     notesAndHelpList = findNotesAndHintButtonArgs(app, boardDisplayArgs)
     buttonsX, buttonsTop, buttonWidths, buttonHeights = notesAndHelpList
 
-    notesY = buttonsTop + 2 * buttonHeights
+    app.gameplayButtonPadding = 0.25 * (boardDisplayArgs['boardHeight'] - 5 * buttonHeights)
+
+    notesY = buttonsTop + (app.gameplayButtonPadding + buttonHeights)
+    hintY = buttonsTop + 2 * (app.gameplayButtonPadding + buttonHeights)
+    deleteY = buttonsTop + 3 * (app.gameplayButtonPadding + buttonHeights)
+    solveY = buttonsTop + 4 * (app.gameplayButtonPadding + buttonHeights)
 
     autoNotesToggle = Toggle('Auto Notes', buttonsX, buttonsTop, buttonWidths, buttonHeights, buttonColors)
     notesModeToggle = Toggle('Notes', buttonsX, notesY, buttonWidths, buttonHeights, buttonColors)
+    hintButton = Button('Hint', buttonsX, hintY, buttonWidths, buttonHeights, buttonColors)
+    deleteButton = Button('Delete', buttonsX, deleteY, buttonWidths, buttonHeights, buttonColors)
+    solveButton = Button('Solve', buttonsX, solveY, buttonWidths, buttonHeights, buttonColors)
 
-    app.gameplayButtons = [autoNotesToggle, notesModeToggle]
+    app.gameplayButtons = [autoNotesToggle, notesModeToggle, hintButton, deleteButton, solveButton]
 
 def gameScreen_onKeyPress(app, key):
         
@@ -152,11 +160,22 @@ def gameScreen_onKeyPress(app, key):
     elif key == 'm':
         app.game.toggleMode()
 
+        # This is the index of the auto notes button
+        notesModeButton = app.gameplayButtons[0]
+        notesModeButton.isPressed = not notesModeButton.isPressed
+
     elif key == 'n':
         app.game.toggleNotes()
 
+        # This is the index of the notes button
+        notesButton = app.gameplayButtons[1]
+        notesButton.isPressed = not notesButton.isPressed
+
     elif key == 'h':
         app.game.generateHint()
+
+    elif key == 's':
+        app.game.board = app.game.solvedBoard
 
 def gameScreen_onMousePress(app, mouseX, mouseY):
 
@@ -221,8 +240,11 @@ def gameScreen_onMouseRelease(app, mouseX, mouseY):
             elif i == 1:
                 app.game.toggleNotes()
             elif i == 2:
-                # add hints
-                pass
+                app.game.generateHint()
+            elif i == 3:
+                app.game.removeNum()
+            elif i == 4:
+                app.game.board = app.game.solvedBoard
 
 def gameScreen_redrawAll(app):
     app.game.drawBoard(app)

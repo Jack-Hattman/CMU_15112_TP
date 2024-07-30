@@ -8,7 +8,7 @@ class Button():
         self.y = y
         self.width = w
         self.height = h
-        self.borderWidth = (w + h) / 30
+        self.borderWidth = (w + h) / 40
         self.isPressed = False
         self.colors = colors
 
@@ -60,7 +60,7 @@ class Button():
         self.y = y
         self.width = w
         self.height = h
-        self.borderWidth = (w + h) / 30
+        self.borderWidth = (w + h) / 40
 
 class Toggle(Button):
     

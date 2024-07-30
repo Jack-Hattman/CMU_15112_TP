@@ -37,7 +37,10 @@ def onResize(app):
         notesAndHelpList = findNotesAndHintButtonArgs(app, boardDisplayArgs)
         buttonsX, buttonsTop, buttonWidths, buttonHeights = notesAndHelpList
 
-        notesY = buttonsTop + 2 * buttonHeights
+        notesY = buttonsTop + (app.gameplayButtonPadding + buttonHeights)
+        hintY = buttonsTop + 2 * (app.gameplayButtonPadding + buttonHeights)
+        deleteY = buttonsTop + 3 * (app.gameplayButtonPadding + buttonHeights)
+        solveY = buttonsTop + 4 * (app.gameplayButtonPadding + buttonHeights)
 
         for i in range(len(app.gameplayButtons)):
             
@@ -45,6 +48,12 @@ def onResize(app):
                 y = buttonsTop
             elif i == 1:
                 y = notesY
+            elif i == 2:
+                y = hintY
+            elif i == 3:
+                y = deleteY
+            elif i == 4:
+                y = solveY
 
             userInput = app.gameplayButtons[i]
 

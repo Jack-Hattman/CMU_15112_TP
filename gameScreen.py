@@ -11,7 +11,7 @@ def findBoardDisplayArgs(app):
     boardWidth = app.width * (2/3)
     boardHeight = app.height * (2/3)
     padding = (app.width + app.height) / 300
-    fontSize = (boardHeight + boardWidth) / 40
+    fontSize = min(boardHeight, boardWidth) / 20
 
     boardDisplayArgs = {
         'boardX' : boardX,
@@ -98,7 +98,8 @@ def gameScreen_onScreenActivate(app):
         'hintColor' : rgb(255, 150, 0)
     }
 
-    if app.game == None:
+
+    if app.game is None:
         app.game = Sudoku(app.difficulty, 'manual', boardDisplayArgs, colors) 
         app.gameOver = False
 
@@ -202,22 +203,24 @@ def gameScreen_onMousePress(app, mouseX, mouseY):
     boardWidth = app.game.displayArgs['boardWidth']
     boardHeight = app.game.displayArgs['boardHeight']
 
+    
     # Check if the mouse is pressed in the board
     if (boardX <= mouseX <= boardX + boardWidth and
         boardY <= mouseY <= boardY + boardHeight):
         app.game.moveTileSelector(mouse=(mouseX, mouseY))
 
-    # Check if any number buttons are pressed
-    for button in app.numButtons:
-        button.checkIsPressed(mouseX, mouseY)
-
     # Check if the help or quit button is pressed
     app.helpButton.checkIsPressed(mouseX, mouseY)
     app.quitButton.checkIsPressed(mouseX, mouseY)
 
-    # Check if notes or hint was pressed
-    for userInput in app.gameplayButtons:
-        userInput.checkIsPressed(mouseX, mouseY)
+    if not app.gameOver:
+        # Check if any number buttons are pressed
+        for button in app.numButtons:
+            button.checkIsPressed(mouseX, mouseY)
+
+        # Check if notes or hint was pressed
+        for userInput in app.gameplayButtons:
+            userInput.checkIsPressed(mouseX, mouseY)
 
 def gameScreen_onMouseRelease(app, mouseX, mouseY):
 

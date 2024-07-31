@@ -56,7 +56,6 @@ class Sudoku():
 
         # Create the proper file name
         fileName = 'boards\\' + difficulty + '-' + str(boardNum) + '.png.txt'
-        print(fileName)
 
         # Reads the file and puts it into the contents variable
         # Taken from the syllabus instructions
@@ -360,6 +359,7 @@ class Sudoku():
             if (self.hint != set() and (row, col) in self.hint and 
                 self.solvedBoard[row][col] == self.board[row][col]):
                 self.hint.remove((row, col))
+                self.legalNums = Sudoku.generateAutoNotes(self)
 
             if self.mode == 'auto':
                 self.legalNums = Sudoku.generateAutoNotes(self)
@@ -394,6 +394,7 @@ class Sudoku():
                 self.board[row][col] = self.solvedBoard[row][col]
 
             self.hint = set()
+            self.legalNums = Sudoku.generateAutoNotes(self)
 
         else:
             # Go through the board of legal nums
@@ -572,7 +573,7 @@ class Sudoku():
         for row in range(self.gridSize ** 2):
             for col in range(self.gridSize ** 2):
 
-                Sudoku.drawTile(self, app, row, col, app.game.board[row][col], 
+                Sudoku.drawTile(self, app, row, col, self.board[row][col], 
                                 borderWidth=padding / 8)
 
         # Draw the final frame

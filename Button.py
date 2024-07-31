@@ -31,7 +31,8 @@ class Button():
         
         if len(str(self.text)) > 1:
             # These numbers were tweaked until they looked nice
-            fontSize = (2 * self.width * self.height)/(len(str(self.text)) * 80)
+            fontSize = (min(self.width, self.height * len(str(self.text)) / 2)
+                         / len(str(self.text)) * 1.25)
         else:
             fontSize = min(self.width, self.height) / 1.5
         

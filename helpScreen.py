@@ -47,6 +47,7 @@ def helpScreen_onAppStart(app):
 
             Normal mode: Press the number button or key to place that number/b
 
+
             Notes mode: Press the Notes button or 'n' to toggle whether you/b
             can take notes. In notes mode you can add or remove note numbers./b
 
@@ -54,7 +55,11 @@ def helpScreen_onAppStart(app):
             the board automatically takes notes for you./b
 
             Hints: press the hint button or 'h' to highlight a cell with a clear/b
-            move. Press the button again to automatically make the move./b'''
+            move. Press the button again to automatically make the move./b
+
+            Delete: press the delete button or 'backspace' to clear the current tile/b
+
+            Solve: press the solve button or 's' to automatically solve the board/b'''
     
 def helpScreen_onMousePress(app, mouseX, mouseY):
 

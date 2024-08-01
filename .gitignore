@@ -2,7 +2,6 @@
 
 # Followed this tutorial https://www.youtube.com/watch?v=tRZGeaHPoaw
 
-/boards
 /venv
 __pycache__
 

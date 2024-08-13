@@ -324,8 +324,8 @@ class Sudoku():
             # This just makes the board scale with 2x2 and 3x3
             paddingLayers = self.gridSize + 1
 
-            boxHeight = (boardWidth - (paddingLayers * padding)) / self.gridSize
-            boxWidth = (boardHeight - (paddingLayers * padding)) / self.gridSize
+            boxHeight = (boardHeight - (paddingLayers * padding)) / self.gridSize
+            boxWidth = (boardWidth - (paddingLayers * padding)) / self.gridSize
 
             # Find the row and col the mouse pressed on
             boxRow = int((mY - boardY) // (boxHeight + padding))
